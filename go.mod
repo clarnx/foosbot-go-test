@@ -2,6 +2,8 @@ module github.com/crispgm/foosbot
 
 go 1.23.0
 
+toolchain go1.24.3
+
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-lark/lark v1.13.3

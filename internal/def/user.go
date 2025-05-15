@@ -35,7 +35,7 @@ func LoadVariables() error {
 	path := fmt.Sprintf(".env.%s", mode)
 	err := godotenv.Load(path)
 	if err != nil {
-		return err
+		log.Printf(".env.%s not found. Use real environment variables.", mode)
 	}
 
 	Port = os.Getenv("FOOSBOT_PORT")

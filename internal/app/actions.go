@@ -6,8 +6,9 @@ import (
 	"log"
 	"strings"
 
-	"github.com/crispgm/foosbot/internal/def"
 	"github.com/go-lark/lark"
+
+	"github.com/crispgm/foosbot/internal/def"
 )
 
 // notify levels

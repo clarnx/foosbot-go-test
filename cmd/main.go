@@ -2,9 +2,10 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
+
 	"github.com/crispgm/foosbot/internal/app"
 	"github.com/crispgm/foosbot/internal/def"
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -17,5 +18,5 @@ func main() {
 
 	router := gin.Default()
 	app.LoadRoutes(router)
-	router.Run(def.Port)
+	router.Run(":8080")
 }

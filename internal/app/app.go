@@ -4,11 +4,13 @@ package app
 import (
 	"encoding/json"
 	"log"
+	"net/http"
 
-	"github.com/crispgm/foosbot/internal/def"
 	"github.com/gin-gonic/gin"
 	"github.com/go-lark/lark"
 	larkgin "github.com/go-lark/lark-gin"
+
+	"github.com/crispgm/foosbot/internal/def"
 )
 
 // CardValue .
@@ -26,6 +28,10 @@ func LoadRoutes(r *gin.Engine) {
 	g := r.Group("/lark")
 	{
 		g.Use(mw.LarkChallengeHandler())
+
+		g.GET("/ping", func(c *gin.Context) {
+			c.String(http.StatusOK, "pong")
+		})
 
 		eventGroup := g.Group("/event")
 		{
