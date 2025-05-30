@@ -48,7 +48,7 @@ func LoadRoutes(r *gin.Engine) {
 								log.Println(msg.Sender.SenderID.OpenID, "sended:", content.Text)
 
 								if msg.Sender.SenderID.OpenID == def.AdminOpenID {
-									if content.Text == "notify" {
+									if content.Text == "notify" || content.Text == "1" {
 										notifyPlayers(bot, LevelNormal)
 									} else if content.Text == "notify more" {
 										notifyPlayers(bot, LevelExtended)
@@ -63,6 +63,7 @@ func LoadRoutes(r *gin.Engine) {
 						if evt, err := event.GetMessageReactionCreated(); err == nil {
 							msgResp, err := bot.WithUserIDType(lark.UIDOpenID).GetMessage(evt.MessageID)
 							if err != nil {
+								log.Println(err)
 								break
 							}
 							if msgResp.Data.Items[0].Sender.ID != def.AppID {
@@ -89,10 +90,14 @@ func LoadRoutes(r *gin.Engine) {
 			cardGroup.POST("/callback", func(c *gin.Context) {
 				if card, ok := mw.GetCardCallback(c); ok {
 					action := card.Action
+					var value CardValue
+					_ = json.Unmarshal([]byte(action.Value), &value)
+					log.Println("Received:", action.Tag, action.Option, value.Action)
 					if action.Tag == "button" {
-						var value CardValue
-						_ = json.Unmarshal([]byte(action.Value), &value)
-						_ = replyToAction(bot, card.OpenID, card.MessageID, value.Action)
+						err := replyToAction(bot, card.OpenID, card.MessageID, value.Action)
+						if err != nil {
+							log.Println(err)
+						}
 					} else if action.Tag == "select_person" {
 						openID := action.Option
 						resp, err := bot.GetUserInfo(lark.WithOpenID(openID))
@@ -100,7 +105,21 @@ func LoadRoutes(r *gin.Engine) {
 							log.Println(err)
 							return
 						}
-						_ = notifySingle(bot, resp.Data.User.EnterpriseEmail)
+						if value.Action == "buzz" {
+							err = notifySingle(bot, resp.Data.User.EnterpriseEmail)
+							if err != nil {
+								log.Println(err)
+							}
+						} else if value.Action == "buzz_phone" {
+							bot.WithUserIDType(lark.UIDOpenID)
+							resp, err := bot.BuzzMessage(lark.BuzzTypePhone, card.MessageID, openID)
+							if err != nil {
+								log.Println(err)
+							}
+							if resp.Code != 0 {
+								log.Println(resp.Code, resp.Msg)
+							}
+						}
 					}
 				}
 			})

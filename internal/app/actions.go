@@ -48,7 +48,7 @@ func buildCard(chatID string, users ...string) lark.OutcomingMessage {
 			b.Field(b.Text("催一下")),
 		),
 		b.Action(
-			b.SelectMenu().SelectPerson().Value(map[string]interface{}{"action": "1"}),
+			b.SelectMenu().SelectPerson().Value(map[string]interface{}{"action": "buzz"}),
 		),
 		b.Hr(),
 		b.Div(
@@ -85,11 +85,11 @@ func notifySingle(bot *lark.Bot, user string) error {
 		b.Action(
 			b.Button(b.Text("签到")).Value(map[string]interface{}{"action": "已到达现场"}),
 		),
-		// b.Hr(),
-		// b.Div(b.Field(b.Text("加急"))),
-		// b.Action(
-		// 	b.SelectMenu().SelectPerson().Value(map[string]interface{}{"action": "1"}).Confirm("确认", "确认进行电话加急"),
-		// ),
+		b.Hr(),
+		b.Div(b.Field(b.Text("加急"))),
+		b.Action(
+			b.SelectMenu().SelectPerson().Value(map[string]interface{}{"action": "buzz_phone"}).Confirm("确认", "确认进行电话加急"),
+		),
 	).
 		Title("速来训练！")
 	msg := lark.
@@ -105,6 +105,8 @@ func notifySingle(bot *lark.Bot, user string) error {
 		log.Println(resp.Code, resp.Msg)
 		return errors.New(resp.Msg)
 	}
+	bot.WithUserIDType(lark.UIDEmail)
+	_, _ = bot.BuzzMessage(lark.BuzzTypePhone, resp.Data.MessageID, user)
 
 	return nil
 }
