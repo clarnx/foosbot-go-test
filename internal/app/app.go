@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-lark/lark"
 	larkgin "github.com/go-lark/lark-gin"
+	"github.com/go-lark/lark/v2"
 
 	"github.com/crispgm/foosbot/internal/def"
 )
@@ -21,7 +21,6 @@ type CardValue struct {
 // LoadRoutes .
 func LoadRoutes(r *gin.Engine) {
 	bot := newBot()
-	bot.StartHeartbeat()
 
 	mw := larkgin.NewLarkMiddleware()
 
@@ -49,9 +48,9 @@ func LoadRoutes(r *gin.Engine) {
 
 								if msg.Sender.SenderID.OpenID == def.AdminOpenID {
 									if content.Text == "notify" || content.Text == "1" {
-										notifyPlayers(bot, LevelNormal)
+										notifyPlayers(c.Request.Context(), bot, LevelNormal)
 									} else if content.Text == "notify more" {
-										notifyPlayers(bot, LevelExtended)
+										notifyPlayers(c.Request.Context(), bot, LevelExtended)
 									}
 								}
 							}
@@ -61,7 +60,7 @@ func LoadRoutes(r *gin.Engine) {
 
 					case lark.EventTypeMessageReactionCreated:
 						if evt, err := event.GetMessageReactionCreated(); err == nil {
-							msgResp, err := bot.WithUserIDType(lark.UIDOpenID).GetMessage(evt.MessageID)
+							msgResp, err := bot.WithUserIDType(lark.UIDOpenID).GetMessage(c.Request.Context(), evt.MessageID)
 							if err != nil {
 								log.Println(err)
 								break
@@ -71,9 +70,9 @@ func LoadRoutes(r *gin.Engine) {
 							}
 							log.Println("Create reaction:", evt.ReactionType.EmojiType)
 							if evt.ReactionType.EmojiType == string(lark.EmojiTypeOK) || evt.ReactionType.EmojiType == string(lark.EmojiTypeJIAYI) {
-								_ = replyToAction(bot, evt.UserID.OpenID, evt.MessageID, "+1")
+								_ = replyToAction(c.Request.Context(), bot, evt.UserID.OpenID, evt.MessageID, "+1")
 							} else if evt.ReactionType.EmojiType == string(lark.EmojiTypeMinusOne) {
-								_ = replyToAction(bot, evt.UserID.OpenID, evt.MessageID, "-1")
+								_ = replyToAction(c.Request.Context(), bot, evt.UserID.OpenID, evt.MessageID, "-1")
 							}
 						} else {
 							log.Println(err)
@@ -94,25 +93,25 @@ func LoadRoutes(r *gin.Engine) {
 					_ = json.Unmarshal([]byte(action.Value), &value)
 					log.Println("Received:", action.Tag, action.Option, value.Action)
 					if action.Tag == "button" {
-						err := replyToAction(bot, card.OpenID, card.MessageID, value.Action)
+						err := replyToAction(c.Request.Context(), bot, card.OpenID, card.MessageID, value.Action)
 						if err != nil {
 							log.Println(err)
 						}
 					} else if action.Tag == "select_person" {
 						openID := action.Option
-						resp, err := bot.GetUserInfo(lark.WithOpenID(openID))
+						resp, err := bot.GetUserInfo(c.Request.Context(), lark.WithOpenID(openID))
 						if err != nil {
 							log.Println(err)
 							return
 						}
 						if value.Action == "buzz" {
-							err = notifySingle(bot, resp.Data.User.EnterpriseEmail, openID)
+							err = notifySingle(c.Request.Context(), bot, resp.Data.User.EnterpriseEmail, openID)
 							if err != nil {
 								log.Println(err)
 							}
 						} else if value.Action == "buzz_phone" {
 							bot.WithUserIDType(lark.UIDOpenID)
-							resp, err := bot.BuzzMessage(lark.BuzzTypePhone, card.MessageID, openID)
+							resp, err := bot.BuzzMessage(c.Request.Context(), lark.BuzzTypePhone, card.MessageID, openID)
 							if err != nil {
 								log.Println(err)
 							}

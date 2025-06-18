@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/go-lark/lark"
+	"github.com/go-lark/lark/v2"
 
 	"github.com/crispgm/foosbot/internal/def"
 )

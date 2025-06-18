@@ -1,12 +1,13 @@
 package app
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
 	"strings"
 
-	"github.com/go-lark/lark"
+	"github.com/go-lark/lark/v2"
 
 	"github.com/crispgm/foosbot/internal/def"
 )
@@ -64,7 +65,7 @@ func buildCard(chatID string, users ...string) lark.OutcomingMessage {
 	return msg
 }
 
-func notifySingle(bot *lark.Bot, email, openID string) error {
+func notifySingle(ctx context.Context, bot *lark.Bot, email, openID string) error {
 	b := lark.NewCardBuilder()
 	card := b.Card(
 		b.Div(
@@ -97,7 +98,7 @@ func notifySingle(bot *lark.Bot, email, openID string) error {
 		BindChatID(def.ChatID).
 		Card(card.String()).
 		Build()
-	resp, err := bot.PostMessage(msg)
+	resp, err := bot.PostMessage(ctx, msg)
 	if err != nil {
 		return err
 	}
@@ -108,7 +109,7 @@ func notifySingle(bot *lark.Bot, email, openID string) error {
 
 	// buzz
 	bot.WithUserIDType(lark.UIDOpenID)
-	buzzResp, err := bot.BuzzMessage(lark.BuzzTypeInApp, resp.Data.MessageID, openID)
+	buzzResp, err := bot.BuzzMessage(ctx, lark.BuzzTypeInApp, resp.Data.MessageID, openID)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -122,7 +123,7 @@ func notifySingle(bot *lark.Bot, email, openID string) error {
 }
 
 // notifyPlayers send notification to players
-func notifyPlayers(bot *lark.Bot, level int) error {
+func notifyPlayers(ctx context.Context, bot *lark.Bot, level int) error {
 	var users []string
 	if level == LevelNormal {
 		// Notify (normal)
@@ -136,7 +137,7 @@ func notifyPlayers(bot *lark.Bot, level int) error {
 
 	// do send
 	msg := buildCard(def.ChatID, users...)
-	resp, err := bot.PostMessage(msg)
+	resp, err := bot.PostMessage(ctx, msg)
 	if err != nil {
 		return err
 	}
@@ -149,8 +150,8 @@ func notifyPlayers(bot *lark.Bot, level int) error {
 }
 
 // replyToAction replies to user who reacts
-func replyToAction(bot *lark.Bot, openID, msgID, action string) error {
-	userResp, err := bot.GetUserInfo(lark.WithOpenID(openID))
+func replyToAction(ctx context.Context, bot *lark.Bot, openID, msgID, action string) error {
+	userResp, err := bot.GetUserInfo(ctx, lark.WithOpenID(openID))
 	if err != nil {
 		return err
 	}
@@ -166,7 +167,7 @@ func replyToAction(bot *lark.Bot, openID, msgID, action string) error {
 		BindOpenID(openID).
 		BindReply(msgID).
 		Build()
-	msgResp, err := bot.ReplyMessage(msg)
+	msgResp, err := bot.ReplyMessage(ctx, msg)
 	if err != nil {
 		return err
 	}
