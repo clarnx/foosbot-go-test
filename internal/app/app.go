@@ -46,12 +46,10 @@ func LoadRoutes(r *gin.Engine) {
 								_ = json.Unmarshal([]byte(msg.Message.Content), &content)
 								log.Println(msg.Sender.SenderID.OpenID, "sended:", content.Text)
 
-								if msg.Sender.SenderID.OpenID == def.AdminOpenID {
-									if content.Text == "notify" || content.Text == "1" {
-										notifyPlayers(c.Request.Context(), bot, LevelNormal)
-									} else if content.Text == "notify more" {
-										notifyPlayers(c.Request.Context(), bot, LevelExtended)
-									}
+								if content.Text == "notify" || content.Text == "1" {
+									notifyPlayers(c.Request.Context(), bot, LevelNormal)
+								} else if content.Text == "notify more" || content.Text == "11" {
+									notifyPlayers(c.Request.Context(), bot, LevelExtended)
 								}
 							}
 						} else {
