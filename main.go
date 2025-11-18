@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/crispgm/foosbot/internal/app"
-	// "github.com/crispgm/foosbot/internal/def"
+	"github.com/crispgm/foosbot/internal/def"
 )
 
 var ginLambda *ginadapter.GinLambda
@@ -19,10 +19,10 @@ var ginLambda *ginadapter.GinLambda
 func init() {
 	gin.SetMode(gin.ReleaseMode)
 
-	// err := def.LoadVariables()
-	// if err != nil {
-	// 	log.Panic(err)
-	// }
+	err := def.LoadVariables()
+	if err != nil {
+		log.Panic(err)
+	}
 
 	router := gin.Default()
 	app.LoadRoutes(router)

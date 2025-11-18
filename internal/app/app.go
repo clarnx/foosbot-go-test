@@ -2,15 +2,15 @@
 package app
 
 import (
-	"encoding/json"
-	"log"
+	// "encoding/json"
+	// "log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	larkgin "github.com/go-lark/lark-gin"
-	"github.com/go-lark/lark/v2"
+	// larkgin "github.com/go-lark/lark-gin"
+	// "github.com/go-lark/lark/v2"
 
-	"github.com/crispgm/foosbot/internal/def"
+	// "github.com/crispgm/foosbot/internal/def"
 )
 
 // CardValue .
