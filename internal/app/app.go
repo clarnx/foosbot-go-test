@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	// larkgin "github.com/go-lark/lark-gin"
+	larkgin "github.com/go-lark/lark-gin"
 	// "github.com/go-lark/lark/v2"
 
 	// "github.com/crispgm/foosbot/internal/def"
@@ -20,7 +20,7 @@ type CardValue struct {
 
 // LoadRoutes .
 func LoadRoutes(r *gin.Engine) {
-	bot := newBot()
+	// bot := newBot()
 
 	mw := larkgin.NewLarkMiddleware()
 
