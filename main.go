@@ -3,7 +3,7 @@ package main
 
 import (
 	"context"
-	"log"
+	// "log"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/crispgm/foosbot/internal/app"
-	"github.com/crispgm/foosbot/internal/def"
+	// "github.com/crispgm/foosbot/internal/def"
 )
 
 var ginLambda *ginadapter.GinLambda
