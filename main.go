@@ -19,10 +19,10 @@ var ginLambda *ginadapter.GinLambda
 func init() {
 	gin.SetMode(gin.ReleaseMode)
 
-	err := def.LoadVariables()
-	if err != nil {
-		log.Panic(err)
-	}
+	// err := def.LoadVariables()
+	// if err != nil {
+	// 	log.Panic(err)
+	// }
 
 	router := gin.Default()
 	app.LoadRoutes(router)

@@ -11,10 +11,10 @@ import (
 func main() {
 	gin.SetMode(gin.ReleaseMode)
 
-	err := def.LoadVariables()
-	if err != nil {
-		panic(err)
-	}
+	// err := def.LoadVariables()
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	router := gin.Default()
 	app.LoadRoutes(router)
